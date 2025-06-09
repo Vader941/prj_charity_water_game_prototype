@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pipeline to Hope</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Pipeline to Hope</h1>
+    <div id="charity-link">
+      <a href="https://www.charitywater.org" target="_blank" rel="noopener noreferrer">
+        Learn about charity: water
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section id="hud">
+      <div>Time: <span id="timer">00:00</span></div>
+      <div>Villages Reached: <span id="score">0</span></div>
+    </section>
+
+    <section id="game-container">
+      <div id="grid"></div>
+      <div id="pipe-queue">
+        <h3>Next Pipes</h3>
+        <div id="queue"></div>
+      </div>
+    </section>
+
+    <button id="start-btn">Start Water Flow</button>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
