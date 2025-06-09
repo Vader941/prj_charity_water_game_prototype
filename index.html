@@ -10,8 +10,8 @@
   <header>
     <h1>Pipeline to Hope</h1>
     <div id="charity-link">
-      <a href="https://www.charitywater.org" target="_blank" rel="noopener noreferrer">
-        Learn about charity: water
+      <a href="https://www.charitywater.org" target="_blank" rel="noopener noreferrer" title="Learn more about charity: water">
+        <img src="./images/cw_light.png" alt="charity: water logo" class="charity-logo">
       </a>
     </div>
   </header>
@@ -19,18 +19,25 @@
   <main>
     <section id="hud">
       <div>Time: <span id="timer">00:00</span></div>
-      <div>Villages Reached: <span id="score">0</span></div>
+      <div>Villages Reached: <span id="score">0/3</span></div>
     </section>
 
     <section id="game-container">
+      <div class="button-stack">
+        <button id="start-btn">Start Water Flow</button>
+        <button id="reset-btn">Reset Game</button>
+      </div>
+      
       <div id="grid"></div>
+      
       <div id="pipe-queue">
         <h3>Next Pipes</h3>
         <div id="queue"></div>
+        <div class="game-info">
+          <p class="info-text">Replacing a pipe costs 2 seconds!</p>
+        </div>
       </div>
     </section>
-
-    <button id="start-btn">Start Water Flow</button>
   </main>
 
   <script src="script.js"></script>
