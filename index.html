@@ -18,13 +18,14 @@
 
   <main>
     <section id="hud">
-      <div>Time: <span id="timer">00:00</span></div>
-      <div>Villages Reached: <span id="score">0/3</span></div>
+      <div>Time: <span id="timer">01:30</span></div>
+      <div>Villages Reached: <span id="score">0/3 | Score: 0</span></div>
     </section>
 
     <section id="game-container">
       <div class="button-stack">
         <button id="start-btn">Start Water Flow</button>
+        <button id="next-round-btn">Next Round</button>
         <button id="reset-btn">Reset Game</button>
       </div>
       
@@ -38,6 +39,66 @@
         </div>
       </div>
     </section>
+    
+    <!-- New instructions section -->
+    <section id="instructions">
+      <h2>How to Play</h2>
+      <div class="instructions-container">
+        <div class="instruction-box">
+          <h3>Game Mechanics</h3>
+          <ol>
+            <li>Connect the water source (blue) to villages (yellow) using pipes</li>
+            <li>Click on any empty space to place the next pipe from your queue</li>
+            <li>Replace existing pipes by clicking on them (costs 2 seconds)</li>
+            <li>Build your pipeline before time runs out</li>
+            <li>Water will automatically flow when time expires</li>
+            <li>Complete multiple rounds to maximize your score</li>
+          </ol>
+        </div>
+        
+        <div class="instruction-box">
+          <h3>Scoring System</h3>
+          <ul>
+            <li><span class="positive">+15 points</span> for each village reached</li>
+            <li><span class="negative">-7 points</span> for each village not reached</li>
+            <li><span class="positive">+3 points</span> for each pipe that carries water</li>
+            <li><span class="negative">-1 point</span> for each unused pipe</li>
+          </ul>
+        </div>
+        
+        <div class="instruction-box">
+          <h3>Tips</h3>
+          <ul>
+            <li>Plan your route carefully - be efficient with pipes</li>
+            <li>Use T-junctions and crossings to reach multiple villages</li>
+            <li>Watch the pipe queue to plan ahead</li>
+            <li>Avoid obstacles (rocks and trash)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Clean water fact popup modal -->
+    <div id="fact-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Did You Know? 💧</h3>
+        </div>
+        <div class="modal-body">
+          <p class="fact-text">
+            [PLACEHOLDER] This is where a clean water fact would appear before each round.
+            Facts about water access, health benefits, and charity: water's impact would rotate.
+          </p>
+          <p class="fact-source">
+            Each round will feature a different fact about clean water and its importance.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button id="learn-more-btn" class="learn-more-btn">Learn More</button>
+          <button id="ok-btn" class="ok-btn">OK</button>
+        </div>
+      </div>
+    </div>
   </main>
 
   <script src="script.js"></script>

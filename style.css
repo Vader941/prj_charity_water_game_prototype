@@ -7,8 +7,8 @@ body {
 }
 
 header {
-  background-color: #ffc907;
-  color: #000;
+  background-color: #1a1a1a;
+  color: #ffc907;
   padding: 1em;
   text-align: center;
 }
@@ -126,6 +126,7 @@ header {
   gap: 10px;
   width: 160px; /* Match the width of the queue column */
   align-self: center; /* Vertically center with the grid */
+  margin-bottom: 10px;
 }
 
 button {
@@ -139,13 +140,28 @@ button {
 }
 
 #start-btn {
-  background-color: #ffd100;
+  background-color: #ffC907;
   color: #333;
 }
 
 #reset-btn {
   background-color: #ff3333;
   color: white;
+}
+
+#next-round-btn {
+  background-color: #003366;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#next-round-btn:disabled {
+  background-color: #77ABBB;
+  cursor: not-allowed;
 }
 
 button:hover {
@@ -231,4 +247,165 @@ button:disabled {
   margin: 0;
   color: #b33a00;
   font-weight: bold;
+}
+
+.final-score {
+  font-weight: bold;
+  color: #007bff;
+  animation: score-pulse 1s ease-in-out 3;
+}
+
+@keyframes score-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Instructions Section */
+#instructions {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 15px;
+  text-align: center;
+}
+
+#instructions h2 {
+  color: #003366;
+  margin-bottom: 20px;
+  font-size: 1.8em;
+}
+
+.instructions-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.instruction-box {
+  background-color: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  min-width: 250px;
+  max-width: 350px;
+}
+
+.instruction-box h3 {
+  color: #ffC907;
+  background-color: #003366;
+  padding: 8px;
+  border-radius: 4px;
+  margin-top: 0;
+}
+
+.instruction-box ol,
+.instruction-box ul {
+  text-align: left;
+  padding-left: 25px;
+  line-height: 1.6;
+}
+
+.instruction-box li {
+  margin-bottom: 8px;
+}
+
+.positive {
+  color: #2e8b57;
+  font-weight: bold;
+}
+
+.negative {
+  color: #dd3333;
+  font-weight: bold;
+}
+
+/* Clean Water Fact Modal Popup */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  overflow: auto;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 0;
+  border: 1px solid #888;
+  border-radius: 8px;
+  width: 60%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: modalFadeIn 0.4s;
+}
+
+@keyframes modalFadeIn {
+  from {opacity: 0; transform: translateY(-50px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+.modal-header {
+  padding: 15px 20px;
+  background-color: #003366;
+  color: #ffC907;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.4em;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.fact-text {
+  font-size: 1.1em;
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.fact-source {
+  font-size: 0.9em;
+  color: #666;
+  font-style: italic;
+}
+
+.modal-footer {
+  padding: 15px 20px;
+  background-color: #f5f5f5;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.ok-btn {
+  background-color: #ffC907;
+  color: #333;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  width: auto;
+}
+
+.learn-more-btn {
+  background-color: #003366;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: auto;
 }
