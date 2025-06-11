@@ -1,27 +1,34 @@
 // ===== Pipe Types and Utilities =====
+/*
+ * This game is about creating pipe networks to deliver water to villages.
+ * Each pipe has openings in different directions (North, East, South, West).
+ * Water can only flow through connected pipe openings.
+ */
 
+// Define the different types of pipes and their openings
+// N = North (top), E = East (right), S = South (bottom), W = West (left)
 const pipeTypes = {
-  // Straight Pipes
-  straight_horizontal: ['E', 'W'],
-  straight_vertical: ['N', 'S'],
+  // Straight Pipes - water flows in 2 opposite directions
+  straight_horizontal: ['E', 'W'],  // Water flows left-to-right or right-to-left
+  straight_vertical: ['N', 'S'],    // Water flows top-to-bottom or bottom-to-top
 
-  // Elbow Pipes (corner pieces)
-  elbow_NE: ['N', 'E'],
-  elbow_NW: ['N', 'W'],
-  elbow_SE: ['S', 'E'],
-  elbow_SW: ['S', 'W'],
+  // Elbow Pipes (corner pieces) - water flows around a 90-degree bend
+  elbow_NE: ['N', 'E'],  // Water flows from top to right or right to top
+  elbow_NW: ['N', 'W'],  // Water flows from top to left or left to top
+  elbow_SE: ['S', 'E'],  // Water flows from bottom to right or right to bottom
+  elbow_SW: ['S', 'W'],  // Water flows from bottom to left or left to bottom
 
-  // T-Junctions (3-way connections)
+  // T-Junctions (3-way connections) - water can split in 3 directions
   t_up: ['N', 'E', 'W'],     // open top, left, right
   t_down: ['S', 'E', 'W'],   // open bottom, left, right
   t_left: ['N', 'S', 'W'],   // open top, bottom, left
   t_right: ['N', 'S', 'E'],  // open top, bottom, right
 
-  // Cross (4-way)
+  // Cross (4-way) - water can flow in all directions
   cross: ['N', 'E', 'S', 'W']
 };
 
-// Add pipe image paths
+// Images for empty pipes (no water flowing through them yet)
 const pipeImages = {
   straight_horizontal: './images/horizontal_pipe_empty.png', // Path to your image
   straight_vertical: './images/vertical_pipe_empty.png', // Path to your image
@@ -40,7 +47,7 @@ const pipeImages = {
   // etc.
 };
 
-// Full versions of pipe images
+// Images for pipes with water flowing through them
 const pipeFullImages = {
   straight_horizontal: './images/horizontal_pipe_full.png',
   straight_vertical: './images/vertical_pipe_full.png',
@@ -55,20 +62,20 @@ const pipeFullImages = {
   t_right: './images/t_pipe_right_full.png'
 };
 
-// Village with water image
+// Image for when a village has received water
 const villageWithWater = './images/village_with_water.png';
 
-// Game element types
+// Define the different types of elements in our game
 const elementTypes = {
-  EMPTY: 'empty',
-  WATER_SOURCE: 'water_source',
-  VILLAGE: 'village',
-  ROCK: 'rock',
-  TRASH: 'trash',
-  PIPE: 'pipe'
+  EMPTY: 'empty',            // Empty space where pipes can be placed
+  WATER_SOURCE: 'water_source', // Starting point for water
+  VILLAGE: 'village',        // Destination for water (goal)
+  ROCK: 'rock',              // Obstacle that blocks pipe placement
+  TRASH: 'trash',            // Another type of obstacle
+  PIPE: 'pipe'               // A player-placed pipe
 };
 
-// Game element images
+// The images for each type of game element
 const elementImages = {
   water_source: './images/water.png',
   village: './images/village_without_water.png',
@@ -77,8 +84,10 @@ const elementImages = {
   // Add any additional images
 };
 
+// This function picks a random pipe type, with specific probabilities
+// Some pipe types are more likely to appear than others
 function getRandomPipeType() {
-  // Define pipe type categories
+  // Group pipe types into categories for easier selection
   const pipeCategories = {
     straight: ['straight_horizontal', 'straight_vertical'],
     elbow: ['elbow_NE', 'elbow_NW', 'elbow_SE', 'elbow_SW'],
@@ -86,21 +95,21 @@ function getRandomPipeType() {
     cross: ['cross']
   };
   
-  // Assign weights to each category (elbow types have lower probability)
+  // Set probabilities for each category - these numbers determine how often each type appears
   const categoryWeights = {
-    straight: 30,   // 30% chance
-    elbow: 15,      // 15% chance (reduced)
-    t_junction: 40, // 40% chance 
-    cross: 15       // 15% chance
+    straight: 30,   // 30% chance - straight pipes appear often
+    elbow: 15,      // 15% chance - elbows are less common
+    t_junction: 40, // 40% chance - T-junctions are most common
+    cross: 15       // 15% chance - cross pipes are rare
   };
   
-  // Calculate total weight
+  // Calculate the total weight to create a probability range
   const totalWeight = Object.values(categoryWeights).reduce((sum, weight) => sum + weight, 0);
   
-  // Generate a random value between 0 and total weight
+  // Pick a random number within our probability range
   let random = Math.random() * totalWeight;
   
-  // Determine which category to choose based on the random value
+  // Determine which category was selected based on our random number
   let selectedCategory = null;
   for (const [category, weight] of Object.entries(categoryWeights)) {
     if (random < weight) {
@@ -110,12 +119,12 @@ function getRandomPipeType() {
     random -= weight;
   }
   
-  // Default to straight if something went wrong
+  // If something went wrong, default to straight pipes
   if (!selectedCategory) {
     selectedCategory = 'straight';
   }
   
-  // Select a random type from the chosen category
+  // Now pick a random pipe type from the selected category
   const types = pipeCategories[selectedCategory];
   const randomIndex = Math.floor(Math.random() * types.length);
   
@@ -123,24 +132,28 @@ function getRandomPipeType() {
 }
 
 // ===== Game State Variables =====
-const gridSize = 10;
-let pipeQueue = [];
-let gameGrid = new Array(gridSize * gridSize).fill(elementTypes.EMPTY);
-let waterSourcePos = -1;
-let villagePositions = []; // Array to track multiple village positions
-let timerInterval = null;
-let timeRemaining = 90; // 90 seconds
-let gameActive = false;
-let firstPipePlaced = false;
-let cumulativeScore = 0; // Track total score across rounds
-let currentRound = 1; // Track which round we're on
+// These variables track the current state of the game
 
-// Initialize DOM element references as null - will be set when DOM is loaded
-let gridElement = null;
-let queueElement = null;
+const gridSize = 10;  // Our game board is 10x10 tiles
+let pipeQueue = [];   // The next 5 pipes the player can place
+let gameGrid = new Array(gridSize * gridSize).fill(elementTypes.EMPTY);  // The current game board state
+let waterSourcePos = -1;  // Position of the water source
+let villagePositions = []; // Positions of all villages (destinations)
+let timerInterval = null;  // Tracks the countdown timer
+let timeRemaining = 90;    // Starting time in seconds
+let gameActive = false;    // Whether the game is currently being played
+let firstPipePlaced = false; // Whether the player has placed their first pipe
+let cumulativeScore = 0;   // The total score across all rounds
+let currentRound = 1;      // Which round the player is on
+
+// References to important HTML elements - initialized when the page loads
+let gridElement = null;    // The game board container
+let queueElement = null;   // The pipe queue display
 
 // ===== Timer Functions =====
+// These functions handle the countdown timer for the game
 
+// Starts the countdown timer when the first pipe is placed
 function startTimer() {
   if (!firstPipePlaced) {
     firstPipePlaced = true;
@@ -151,26 +164,30 @@ function startTimer() {
     if (timerElement) {
       timerElement.textContent = formatTime(timeRemaining);
       
-      // Start countdown
+      // Start countdown - this runs every second
       timerInterval = setInterval(() => {
         timeRemaining--;
         timerElement.textContent = formatTime(timeRemaining);
         
+        // If time runs out, end the game
         if (timeRemaining <= 0) {
           endGame();
         }
-      }, 1000);
+      }, 1000); // 1000 milliseconds = 1 second
     }
   }
 }
 
+// Converts seconds into a minutes:seconds format (MM:SS)
 function formatTime(seconds) {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
+// Called when the timer runs out or the player clicks "Start Water Flow"
 function endGame() {
+  // Stop the timer
   clearInterval(timerInterval);
   gameActive = false;
   
@@ -193,6 +210,7 @@ function endGame() {
   }, 1000);
 }
 
+// Resets the timer for a new game or round
 function resetTimer() {
   clearInterval(timerInterval);
   timerInterval = null;
@@ -208,7 +226,9 @@ function resetTimer() {
 }
 
 // ===== Game Initialization =====
+// These functions set up the game
 
+// Gets references to important HTML elements
 function initializeDOM() {
   gridElement = document.getElementById('grid');
   queueElement = document.getElementById('queue');
@@ -220,6 +240,7 @@ function initializeDOM() {
   return true;
 }
 
+// Sets up a new game with a fresh board
 function initializeGame() {
   // First make sure we have all DOM elements
   if (!initializeDOM()) {
@@ -227,7 +248,7 @@ function initializeGame() {
     return;
   }
   
-  // Reset game state
+  // Reset game state to defaults
   gameGrid = new Array(gridSize * gridSize).fill(elementTypes.EMPTY);
   villagePositions = [];
   resetTimer();
@@ -236,33 +257,29 @@ function initializeGame() {
   cumulativeScore = 0;
   currentRound = 1;
   
-  // Place water source on a random edge
+  // Place water source on a random edge tile
   waterSourcePos = placeRandomEdgeElement(elementTypes.WATER_SOURCE);
   
-  // Place three villages with different distance requirements
-  // First village - at least 8x6 squares away
-  villagePositions.push(placeVillage(8, 6));
+  // Place three villages with different distance requirements from water source
+  // This ensures the game has a good challenge level
+  villagePositions.push(placeVillage(8, 6)); // First village - at least 8x6 squares away
+  villagePositions.push(placeVillage(6, 4)); // Second village - at least 6x4 squares away
+  villagePositions.push(placeVillage(7, 5)); // Third village - at least 7x5 squares away
   
-  // Second village - at least 6x4 squares away
-  villagePositions.push(placeVillage(6, 4));
-  
-  // Third village - at least 7x5 squares away
-  villagePositions.push(placeVillage(7, 5));
-  
-  // Place exactly 4 trash barriers
+  // Place obstacles to make the game more challenging
   for (let i = 0; i < 4; i++) {
-    placeRandomNonEdgeElement(elementTypes.TRASH);
+    placeRandomNonEdgeElement(elementTypes.TRASH); // Place exactly 4 trash barriers
   }
   
-  // Place exactly 8 rock barriers
   for (let i = 0; i < 8; i++) {
-    placeRandomNonEdgeElement(elementTypes.ROCK);
+    placeRandomNonEdgeElement(elementTypes.ROCK); // Place exactly 8 rock barriers
   }
   
+  // Create the visual game grid and generate initial pipe queue
   createGrid();
   generatePipeQueue();
   
-  // Update the village count in the UI with score
+  // Update the score display
   document.getElementById('score').textContent = `0/${villagePositions.length} | Score: ${cumulativeScore}`;
   
   // Enable or disable the start button based on game state
@@ -272,6 +289,7 @@ function initializeGame() {
   }
 }
 
+// Places a village at a minimum distance from water source
 function placeVillage(minDistX, minDistY) {
   const waterX = waterSourcePos % gridSize;
   const waterY = Math.floor(waterSourcePos / gridSize);
@@ -339,6 +357,7 @@ function placeVillage(minDistX, minDistY) {
   return -1;
 }
 
+// Places an element (like water source) on a random edge of the grid
 function placeRandomEdgeElement(elementType) {
   const edges = [];
   
@@ -374,6 +393,7 @@ function placeRandomEdgeElement(elementType) {
   return position;
 }
 
+// Places an element (like rocks or trash) on a random non-edge tile
 function placeRandomNonEdgeElement(elementType) {
   let attempts = 0;
   let position;
@@ -404,10 +424,12 @@ function placeRandomNonEdgeElement(elementType) {
   } while (true);
 }
 
+// Checks if a position is valid for pipe placement
 function isPositionValid(index) {
   return gameGrid[index] === elementTypes.EMPTY;
 }
 
+// Creates the visual grid based on the game state
 function createGrid() {
   if (!gridElement) {
     console.error("Grid element not found! Trying to re-initialize DOM...");
@@ -447,11 +469,13 @@ function createGrid() {
   }
 }
 
+// Generates a queue of 5 random pipes for the player to use
 function generatePipeQueue() {
   pipeQueue = Array.from({ length: 5 }, () => getRandomPipeType());
   renderPipeQueue();
 }
 
+// Updates the visual display of the pipe queue
 function renderPipeQueue() {
   if (!queueElement) {
     console.error("Queue element not found! Trying to re-initialize DOM...");
@@ -480,7 +504,9 @@ function renderPipeQueue() {
 }
 
 // ===== Pipe Placement =====
+// This is where player interactions are handled
 
+// Called when a player clicks on a tile to place a pipe
 function placePipe(index) {
   // Don't allow placement after time runs out
   if (!gameActive && firstPipePlaced) return;
@@ -522,11 +548,12 @@ function placePipe(index) {
     }
   }
   
+  // Get the next pipe from the queue
   const pipeType = pipeQueue[0];
   tile.innerHTML = ''; // Clear any existing content
   tile.className = 'grid-tile pipe'; // Reset classes and add pipe class
   
-  // Add image if available, otherwise use text
+  // Add the pipe image to the tile
   if (pipeImages[pipeType]) {
     const img = document.createElement('img');
     img.src = pipeImages[pipeType];
@@ -537,22 +564,23 @@ function placePipe(index) {
     tile.textContent = pipeType;
   }
   
-  // Store pipe type in dataset for later use AND add a data attribute for the pipe connections
+  // Store information about the pipe for later water flow calculations
   tile.dataset.pipeType = pipeType;
   tile.dataset.connections = pipeTypes[pipeType].join(',');
   
-  // Debug verification of pipe type and connections
+  // Log debugging information
   console.log(`Placed pipe at position ${index}: type=${pipeType}, connections=${pipeTypes[pipeType].join(',')}`);
   
-  // Mark the grid position as having a pipe
+  // Update the game state
   gameGrid[index] = elementTypes.PIPE;
   
+  // Move to next pipe in queue and add a new random pipe at the end
   pipeQueue.shift();
   pipeQueue.push(getRandomPipeType());
   renderPipeQueue();
 }
 
-// Add a function to verify pipe types during water flow
+// Checks if a pipe's image matches its type (for debugging)
 function verifyPipeType(position) {
   const tile = gridElement.children[position];
   if (!tile) return false;
@@ -579,7 +607,9 @@ function verifyPipeType(position) {
 }
 
 // ===== Water Flow Logic =====
+// This is how water flows through the pipes when the game ends
 
+// Start the water flow process from the water source
 function startWaterFlow() {
   // Disable the button during simulation
   document.getElementById('start-btn').disabled = true;
@@ -605,7 +635,7 @@ function startWaterFlow() {
   const y = Math.floor(waterSourcePos / gridSize);
   
   // Initialize the flow from water source in all directions
-  // We need to check if adjacent cells exist before adding them to the queue
+  // Check in each cardinal direction if there's a tile we can flow to
   if (x > 0) flowQueue.push([waterSourcePos - 1, 'E']); // To the West
   if (x < gridSize - 1) flowQueue.push([waterSourcePos + 1, 'W']); // To the East
   if (y > 0) flowQueue.push([waterSourcePos - gridSize, 'S']); // To the North
@@ -618,7 +648,9 @@ function startWaterFlow() {
   processWaterFlow(flowQueue, waterFlowGrid, villagesReached);
 }
 
+// Recursively process water flowing through the pipe network
 function processWaterFlow(flowQueue, waterFlowGrid, villagesReached, index = 0) {
+  // Base case: no more positions to process
   if (index >= flowQueue.length) {
     // Water flow completed
     console.log('Water flow completed. Villages reached:', villagesReached.size);
@@ -651,11 +683,11 @@ function processWaterFlow(flowQueue, waterFlowGrid, villagesReached, index = 0) 
   
   // Handle different element types
   if (elementType === elementTypes.VILLAGE) {
-    // Village receives water
+    // If water reaches a village, mark it as reached
     waterFlowGrid[position] = true;
     villagesReached.add(position);
     
-    // Change village image
+    // Change village image to show water
     const tile = gridElement.children[position];
     const img = tile.querySelector('img');
     if (img) {
@@ -663,17 +695,18 @@ function processWaterFlow(flowQueue, waterFlowGrid, villagesReached, index = 0) 
       img.src = villageWithWater;
     }
     
-    // Add visual indicator class
+    // Add visual indicator class for water
     tile.classList.add('has-water');
     
-    // Villages don't continue flow
+    // Villages don't continue flow - move to next position
     processWaterFlow(flowQueue, waterFlowGrid, villagesReached, index + 1);
     
   } else if (elementType === elementTypes.PIPE) {
+    // If water reaches a pipe, check if it can flow through
     const tile = gridElement.children[position];
     const pipeType = tile.dataset.pipeType;
     
-    // Verify pipe type is correct
+    // Make sure the pipe type is correct
     verifyPipeType(position);
     
     if (!pipeType) {
@@ -685,12 +718,12 @@ function processWaterFlow(flowQueue, waterFlowGrid, villagesReached, index = 0) 
     console.log(`Pipe type at position ${position} is: ${pipeType} with openings: ${pipeTypes[pipeType]}`);
     console.log(`Water coming from direction: ${fromDirection}`);
     
-    // Clear debug info if exists and add new debug info
+    // Remove any old debug info
     if (tile.querySelector('.debug-info')) {
       tile.removeChild(tile.querySelector('.debug-info'));
     }
     
-    // Add debug info element to show pipe type and connections
+    // Create new debug info (normally hidden)
     const debugInfo = document.createElement('div');
     debugInfo.className = 'debug-info';
     debugInfo.textContent = `${pipeType}: ${pipeTypes[pipeType].join(',')}`;
@@ -703,7 +736,7 @@ function processWaterFlow(flowQueue, waterFlowGrid, villagesReached, index = 0) 
     debugInfo.style.zIndex = '100';
     debugInfo.style.padding = '1px';
     
-    // Uncomment to enable visual debugging
+    // For debugging only - uncomment to see pipe types
     // tile.style.position = 'relative';
     // tile.appendChild(debugInfo);
     
@@ -717,18 +750,18 @@ function processWaterFlow(flowQueue, waterFlowGrid, villagesReached, index = 0) 
       // Add visual indicator class
       tile.classList.add('has-water');
       
-      // Change pipe image to full
+      // Change pipe image to show water flowing through it
       const img = tile.querySelector('img');
       if (img && pipeFullImages[pipeType]) {
         console.log(`Updating pipe image at position ${position} to ${pipeFullImages[pipeType]}`);
         img.src = pipeFullImages[pipeType];
       }
       
-      // Add next positions to flow queue
+      // Add next positions to flow queue based on pipe openings
       const x = position % gridSize;
       const y = Math.floor(position / gridSize);
       
-      // Create a more robust direction checking
+      // Create a more robust direction checking system
       const connections = [];
       
       // For each open end of the pipe, check if there's a connecting pipe
@@ -745,10 +778,10 @@ function processWaterFlow(flowQueue, waterFlowGrid, villagesReached, index = 0) 
         connections.push({direction: 'E', position: position + 1, from: 'W'});
       }
       
-      // Filter out the direction we came from to avoid backflow
+      // Filter out the direction water came from to avoid backflow
       const outgoingConnections = connections.filter(conn => conn.direction !== fromDirection);
       
-      // Add all valid connections to the queue
+      // Add all valid connections to the queue for processing
       for (const conn of outgoingConnections) {
         console.log(`Adding ${conn.direction} connection at position ${conn.position} to flow queue`);
         flowQueue.push([conn.position, conn.from]);
@@ -768,6 +801,7 @@ function processWaterFlow(flowQueue, waterFlowGrid, villagesReached, index = 0) 
   }
 }
 
+// Calculate final score and display results when water flow is complete
 function endWaterFlow(villagesReached) {
   // Calculate score for this round
   let roundScore = 0;
@@ -780,20 +814,20 @@ function endWaterFlow(villagesReached) {
       pipeCount++;
       const tile = gridElement.children[i];
       if (tile.classList.contains('has-water')) {
-        // +3 for each pipe with water
+        // +3 points for each pipe that carries water (efficient network)
         roundScore += 3;
         pipesWithWater++;
       } else {
-        // -1 for each unused pipe
+        // -1 point for each unused pipe (inefficient network)
         roundScore -= 1;
       }
     }
   }
   
-  // Add points for villages reached
+  // Add points for villages reached (main goal)
   roundScore += villagesReached.size * 15;
   
-  // Subtract points for villages not reached
+  // Subtract points for villages not reached (failed objectives)
   roundScore -= (villagePositions.length - villagesReached.size) * 7;
   
   // Update cumulative score
@@ -803,10 +837,10 @@ function endWaterFlow(villagesReached) {
   const scoreElement = document.getElementById('score');
   scoreElement.textContent = `${villagesReached.size}/${villagePositions.length} | Score: ${cumulativeScore}`;
   
-  // Add class to show final score
+  // Add class to show final score with animation
   scoreElement.classList.add('final-score');
   
-  // Generate the round summary
+  // Generate the round summary to show player
   let summary = `Round ${currentRound} Summary:\n`;
   summary += `- Villages reached: ${villagesReached.size}/${villagePositions.length}\n`;
   summary += `- Pipes with water: ${pipesWithWater}/${pipeCount}\n`;
@@ -827,15 +861,13 @@ function endWaterFlow(villagesReached) {
     message += summary;
     alert(message);
     
-    // Enable the next round button
+    // Enable buttons for next steps
     document.getElementById('next-round-btn').disabled = false;
-    
-    // Re-enable the reset button
     document.getElementById('reset-btn').disabled = false;
   }, 1000);
 }
 
-// Add function to start next round
+// Start a new round while keeping the cumulative score
 function startNextRound() {
   // Increment round counter
   currentRound++;
@@ -843,15 +875,12 @@ function startNextRound() {
   // Display the water fact modal before starting the round
   showWaterFactModal();
   
-  // The rest of the round setup would continue after the modal is closed
-  // For now, we'll just reset the game grid but keep the cumulative score
-  
   // Reset the game grid but keep the cumulative score
   gameGrid = new Array(gridSize * gridSize).fill(elementTypes.EMPTY);
   villagePositions = [];
   resetTimer();
   
-  // Place new elements
+  // Place new elements for this round
   waterSourcePos = placeRandomEdgeElement(elementTypes.WATER_SOURCE);
   
   // Place three villages with different distance requirements
@@ -880,7 +909,10 @@ function startNextRound() {
   document.getElementById('next-round-btn').disabled = true;
 }
 
-// Function to display the water fact modal
+// ===== Educational Water Facts Modal =====
+// These functions handle the water fact popup window
+
+// Show the water fact modal popup
 function showWaterFactModal() {
   const modal = document.getElementById('fact-modal');
   modal.style.display = 'block';
@@ -890,12 +922,12 @@ function showWaterFactModal() {
   document.getElementById('learn-more-btn').addEventListener('click', learnMore);
 }
 
-// Function to close the modal
+// Close the water fact modal
 function closeModal() {
   document.getElementById('fact-modal').style.display = 'none';
 }
 
-// Placeholder function for "Learn More" button
+// Handle the "Learn More" button (placeholder)
 function learnMore() {
   alert('This would link to educational resources about clean water access.');
   // In the future, this would open a new tab with educational content
@@ -904,6 +936,7 @@ function learnMore() {
 }
 
 // ===== Start Game =====
+// This is the event handler for the "Start Water Flow" button
 
 document.getElementById('start-btn').addEventListener('click', () => {
   // Only allow water flow if at least one pipe has been placed
@@ -924,7 +957,9 @@ document.getElementById('start-btn').addEventListener('click', () => {
   }
 });
 
-// Also show the modal at game start (after DOM is loaded)
+// ===== Initialize Everything =====
+// This runs when the page first loads
+
 document.addEventListener('DOMContentLoaded', () => {
   // Initialize DOM references first
   if (!initializeDOM()) {

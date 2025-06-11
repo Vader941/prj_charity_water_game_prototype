@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Basic page setup - character encoding, responsive viewport, and title -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pipeline to Hope</title>
+  <!-- Link to the stylesheet that controls how everything looks -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Header section with game title and charity link -->
   <header>
     <h1>Pipeline to Hope</h1>
+    <!-- Link to charity: water website with their logo -->
     <div id="charity-link">
       <a href="https://www.charitywater.org" target="_blank" rel="noopener noreferrer" title="Learn more about charity: water">
         <img src="./images/cw_light.png" alt="charity: water logo" class="charity-logo">
@@ -17,33 +21,40 @@
   </header>
 
   <main>
+    <!-- HUD (Heads Up Display) shows game status information -->
     <section id="hud">
       <div>Time: <span id="timer">01:30</span></div>
       <div>Villages Reached: <span id="score">0/3 | Score: 0</span></div>
     </section>
 
+    <!-- Main game container with buttons, grid and pipe queue -->
     <section id="game-container">
+      <!-- Button controls for the game -->
       <div class="button-stack">
         <button id="start-btn">Start Water Flow</button>
         <button id="next-round-btn">Next Round</button>
         <button id="reset-btn">Reset Game</button>
       </div>
       
+      <!-- This is where the 10x10 game grid appears -->
       <div id="grid"></div>
       
+      <!-- Shows the upcoming pipes that can be placed -->
       <div id="pipe-queue">
         <h3>Next Pipes</h3>
         <div id="queue"></div>
+        <!-- Information about game mechanics -->
         <div class="game-info">
           <p class="info-text">Replacing a pipe costs 2 seconds!</p>
         </div>
       </div>
     </section>
     
-    <!-- New instructions section -->
+    <!-- Game instructions section explaining how to play -->
     <section id="instructions">
       <h2>How to Play</h2>
       <div class="instructions-container">
+        <!-- Box explaining basic game mechanics -->
         <div class="instruction-box">
           <h3>Game Mechanics</h3>
           <ol>
@@ -56,6 +67,7 @@
           </ol>
         </div>
         
+        <!-- Box explaining how scoring works -->
         <div class="instruction-box">
           <h3>Scoring System</h3>
           <ul>
@@ -66,6 +78,7 @@
           </ul>
         </div>
         
+        <!-- Box with helpful playing tips -->
         <div class="instruction-box">
           <h3>Tips</h3>
           <ul>
@@ -78,7 +91,7 @@
       </div>
     </section>
 
-    <!-- Clean water fact popup modal -->
+    <!-- Modal popup for clean water facts between rounds -->
     <div id="fact-modal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -101,6 +114,7 @@
     </div>
   </main>
 
+  <!-- Link to the JavaScript file that makes the game work -->
   <script src="script.js"></script>
 </body>
 </html>
