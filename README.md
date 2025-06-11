@@ -19,7 +19,6 @@ Build the longest, most effective pipeline from a single water source to as many
 
 ## 🧩 Gameplay Features
 
-- 🧱 Drag-and-drop grid interface (HTML/CSS Grid)
 - 🔁 Fixed-orientation pipe tiles
 - ⏱️ Live timer and penalty system
 - 💦 Real-time water flow simulation
@@ -104,8 +103,8 @@ This project was created as a 3-week prototype for an academic assignment, with 
 
 **Nathan Able**  
 Frontend Developer | Software Engineering Student  
-[GitHub Portfolio](https://github.com/NathanAble)  
-[LinkedIn Profile](https://www.linkedin.com/in/YOUR-USERNAME) _(optional)_
+[GitHub Portfolio](https://github.com/Vader941)  
+[LinkedIn Profile](https://www.linkedin.com/in/nathan-able/) _(optional)_
 
 ---
 
